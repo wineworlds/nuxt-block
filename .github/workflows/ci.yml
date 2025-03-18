@@ -15,15 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
-
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-          run_install: false
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: npx nypm@latest i
@@ -37,15 +32,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
-
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-          run_install: false
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: npx nypm@latest i
