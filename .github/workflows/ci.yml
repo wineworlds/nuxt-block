@@ -14,7 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: corepack enable
+        # https://github.com/actions/setup-node/issues/1222#issuecomment-2631024706
+      - run: npm i -g --force corepack && corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
@@ -31,7 +32,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: corepack enable
+        # https://github.com/actions/setup-node/issues/1222#issuecomment-2631024706
+      - run: npm i -g --force corepack && corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
