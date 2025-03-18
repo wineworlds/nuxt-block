@@ -2,7 +2,7 @@
 import { defineAsyncComponent, shallowRef, watchEffect } from 'vue'
 
 const props = defineProps<{
-  name: string
+  name: string | undefined
   context?: any // Dynamischer Context für die Komponente & Condition
 }>()
 
@@ -18,7 +18,7 @@ const selectedComponent = shallowRef(null)
 
 // Prüft die Condition und lädt ggf. die Komponente
 const check = async () => {
-  if (props.name in blocks) {
+  if (props.name && props.name in blocks) {
     const block = blocks[props.name]
 
     if (block.condition) {

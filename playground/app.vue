@@ -21,5 +21,5 @@
 </template>
 
 <script setup>
-const block = ref()
+const block = ref('test-block-1')
 </script>
