@@ -8,7 +8,7 @@ import {
   addTemplate,
   createResolver,
   defineNuxtModule,
-} from 'nuxt/kit'
+} from '@nuxt/kit'
 
 export interface NuxtBlockModuleOptions {
   /**
