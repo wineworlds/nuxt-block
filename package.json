@@ -1,8 +1,13 @@
 {
-  "name": "my-module",
+  "name": "nuxt-block",
   "version": "1.0.0",
-  "description": "My new Nuxt module",
-  "repository": "your-org/my-module",
+  "description": "This module provides a way to define blocks in Nuxt templates, allowing them to be dynamically overridden elsewhere. It is fully compatible with **Nuxt Layers**.",
+  "repository": "wineworlds/nuxt-block",
+  "author": {
+    "name": "Kubilay Melnikov",
+    "email": "melnikov@wineworlds.de",
+    "url": "https://www.wineworlds.de"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {

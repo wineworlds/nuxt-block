@@ -1,84 +1,122 @@
-<!--
-Get your module up and running quickly.
+# Nuxt Block Module
 
-Find and replace all on all files (CMD+SHIFT+F):
-- Name: My Module
-- Package name: my-module
-- Description: My new Nuxt module
--->
+This module provides a way to define blocks in Nuxt templates, allowing them to be dynamically overridden elsewhere. It is fully compatible with **Nuxt Layers**.
 
-# My Module
+## ✨ Features
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+- Define blocks in templates and override them dynamically.
+- Use a **condition** (implemented as a composable) to determine whether a component should be loaded.
+- Inspired by Twig's block system, bringing similar functionality to Nuxt.
+- Future improvements:
+  - Support for **nested block overrides** (currently, a block can only be overridden once).
+  - **Dynamic lazy loading** of composables for better performance (if feasible).
 
-My new Nuxt module for doing amazing things.
-
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
-
-## Features
-
-<!-- Highlight some of the features your module provide here -->
-- ⛰ &nbsp;Foo
-- 🚠 &nbsp;Bar
-- 🌲 &nbsp;Baz
-
-## Quick Setup
+## 🚀 Installation
 
 Install the module to your Nuxt application with one command:
 
-```bash
-npx nuxi module add my-module
+```sh
+npx nuxi module add nuxt-block
 ```
 
-That's it! You can now use My Module in your Nuxt app ✨
+That's it! You can now use Nuxt Block in your Nuxt app ✨
 
+## 🔧 Configuration
 
-## Contribution
+In your `nuxt.config.ts`, register the module and specify the block directory:
+
+```ts
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+
+const currentDir = dirname(fileURLToPath(import.meta.url))
+
+export default defineNuxtConfig({
+  module: ['wineworlds/nuxt-block'],
+  block: {
+    blocks: [
+      join(currentDir, 'blocks'),
+    ],
+  },
+})
+```
+
+## 📂 Block Mapping
+
+Define your block mappings in a `mapping.json` file inside the `blocks/` directory. The **condition** property is optional:
+
+```json
+{
+  "logo": {
+    "component": "./Logo/logo.vue",
+    "condition": "./Logo/condition.ts"
+  }
+}
+```
+
+The specified files should also be located within the `blocks/` directory.
+
+## 🛠 Usage
+
+Once configured, you can use the `<Block>` component anywhere in your templates:
+
+```vue
+<Block name="logo" />
+```
+
+or provide a fallback content:
+
+```vue
+<Block name="logo">
+  <NuxtImg src="/logo.png" alt="Logo" />
+</Block>
+```
+
+## 🏗 Future Enhancements
+
+- **Nested overrides**: Allow blocks to be overridden multiple times in a hierarchy.
+- **Lazy loading of composables**: Improve performance by dynamically loading only required composables.
+
+## 🤝 Contributing
+
+Contributions are welcome! If you’d like to improve this module, feel free to submit a pull request or open an issue on GitHub.
+
+### Steps to Contribute:
+1. Fork the repository.
+2. Create a new branch (`feature/new-awesome-feature`).
+3. Commit your changes with a meaningful message.
+4. Push to your branch and create a pull request.
 
 <details>
   <summary>Local development</summary>
   
   ```bash
   # Install dependencies
-  npm install
+  pnpm install
   
   # Generate type stubs
-  npm run dev:prepare
+  pnpm dev:prepare
   
   # Develop with the playground
-  npm run dev
+  pnpm dev
   
   # Build the playground
-  npm run dev:build
+  pnpm dev:build
   
   # Run ESLint
-  npm run lint
+  pnpm lint
   
   # Run Vitest
-  npm run test
-  npm run test:watch
+  pnpm test
+  pnpm test:watch
   
   # Release new version
-  npm run release
+  pnpm release
   ```
 
 </details>
 
+## 📜 License
 
-<!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-version-href]: https://npmjs.com/package/my-module
+MIT
 
-[npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-downloads-href]: https://npm.chart.dev/my-module
-
-[license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[license-href]: https://npmjs.com/package/my-module
-
-[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
-[nuxt-href]: https://nuxt.com

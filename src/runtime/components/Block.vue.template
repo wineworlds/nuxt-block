@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import { defineAsyncComponent, shallowRef, watchEffect } from 'vue'
+
+const props = defineProps<{
+  name: string
+  context?: any // Dynamischer Context für die Komponente & Condition
+}>()
+
+const blocks = {
+  <%= Object.entries(options.blocks).map(([key, value]) => `'${key}': {
+    component: defineAsyncComponent(() => import('${value.component}')),
+    condition: ${value.condition ? value.condition : "null"},
+  }`).join(",\n  ") %>,
+}
+
+// Zustand für die geladene Komponente
+const selectedComponent = shallowRef(null)
+
+// Prüft die Condition und lädt ggf. die Komponente
+const check = async () => {
+  if (props.name in blocks) {
+    const block = blocks[props.name]
+
+    if (block.condition) {
+      const conditionResult = await block.condition(props.context || {})
+      if (!conditionResult) {
+        selectedComponent.value = null
+        return
+      }
+    }
+
+    selectedComponent.value = block.component
+  } else {
+    selectedComponent.value = null
+  }
+}
+
+await check()
+watchEffect(check)
+</script>
+
+<template>
+  <component :is="selectedComponent" v-if="selectedComponent" :context="context" />
+  <slot v-else />
+</template>
