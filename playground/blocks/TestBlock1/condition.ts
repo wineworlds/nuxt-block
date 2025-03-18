@@ -1,3 +1,4 @@
 export default function () {
-  return true
+  const state = useState('test-block-condition', () => true)
+  return toValue(state)
 }

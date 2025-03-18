@@ -4,7 +4,6 @@
     "condition": "./TestBlock1/condition.ts"
   },
   "test-block-2": {
-    "component": "./TestBlock2/testBlock.vue",
-    "condition": "./TestBlock2/condition.ts"
+    "component": "./TestBlock2/testBlock.vue"
   }
 }

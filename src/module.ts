@@ -25,7 +25,7 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
   defaults: {
     blocks: [],
   },
-  async setup(options) {
+  async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
     const blocks = options.blocks.map((path) => {
@@ -50,7 +50,7 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
           return {
             [k]: {
               component,
-              condition: conditionName,
+              condition: condition ? conditionName : null,
             },
           }
         })
@@ -66,8 +66,8 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
 
     addTemplate({
       src: resolve('./runtime/components/Block.vue.template'),
-      // filename: 'Block.vue', // Place to .nuxt/
-      filename: resolve('./runtime/components/Block.vue'),
+      filename: 'Block.vue', // Place to .nuxt/
+      // filename: resolve('./runtime/components/Block.vue'), // Place to Module
       options: {
         blocks,
       },
@@ -75,8 +75,8 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
     })
 
     addComponent({
-      // filePath: join(nuxt.options.buildDir, 'Block.vue'), // Load from .nuxt/Block.vue
-      filePath: resolve('./runtime/components/Block.vue'),
+      filePath: join(nuxt.options.buildDir, 'Block.vue'), // Load from .nuxt/Block.vue
+      // filePath: resolve('./runtime/components/Block.vue'), // Load from Module
       name: 'Block',
     })
   },
