@@ -16,7 +16,7 @@ This module provides a way to define blocks in Nuxt templates, allowing them to 
 Install the module to your Nuxt application with one command:
 
 ```sh
-npx nuxi module add nuxt-block
+npx nuxi module add @wineworlds/nuxt-block
 ```
 
 That's it! You can now use Nuxt Block in your Nuxt app ✨
@@ -32,7 +32,7 @@ import { dirname, join } from 'path'
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
-  module: ['wineworlds/nuxt-block'],
+  module: ['@wineworlds/nuxt-block'],
   block: {
     blocks: [
       join(currentDir, 'blocks'),
