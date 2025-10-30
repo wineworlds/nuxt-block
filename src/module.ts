@@ -21,6 +21,7 @@ interface BlockDefinition {
   component: string
   conditionPath: string | null
   conditionImport: string | null
+  order: number
 }
 
 export default defineNuxtModule<NuxtBlockModuleOptions>({
@@ -39,18 +40,27 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
         const mapping: Record<string, {
           component: string
           condition?: string
-        }> = JSON.parse(readFileSync(join(path, 'mapping.json'), 'utf8'))
+        } | Array<{
+          component: string
+          condition?: string
+        }>> = JSON.parse(readFileSync(join(path, 'mapping.json'), 'utf8'))
 
-        return Object.entries(mapping).map(([key, value]) => {
-          const component = join(path, value.component)
-          const conditionPath = value.condition ? join(path, value.condition) : null
+        return Object.entries(mapping).flatMap(([key, rawValue]) => {
+          const entries = Array.isArray(rawValue) ? rawValue : [rawValue]
 
-          return {
-            key,
-            component,
-            conditionPath,
-            conditionImport: conditionPath ? camelCase(`${key}-condition`) : null,
-          }
+          return entries.map((value, index) => {
+            const component = join(path, value.component)
+            const conditionPath = value.condition ? join(path, value.condition) : null
+            const conditionImport = conditionPath ? camelCase(`${key}-condition-${index}`) : null
+
+            return {
+              key,
+              component,
+              conditionPath,
+              conditionImport,
+              order: index,
+            }
+          })
         })
       }
       catch (error) {
@@ -63,9 +73,26 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
       .filter(definition => definition.conditionPath && definition.conditionImport)
       .map(definition => `import ${definition.conditionImport} from ${JSON.stringify(definition.conditionPath)}`)
 
-    const registryEntries = blockDefinitions.map((definition) => {
-      const condition = definition.conditionImport ? `, conditionFactory: ${definition.conditionImport}` : ''
-      return `  ${JSON.stringify(definition.key)}: { component: () => import(${JSON.stringify(definition.component)})${condition} },`
+    const groupedDefinitions = blockDefinitions.reduce((accumulator, definition) => {
+      const group = accumulator[definition.key] || []
+      group.push(definition)
+      accumulator[definition.key] = group
+      return accumulator
+    }, {} as Record<string, BlockDefinition[]>)
+
+    const registryEntries = Object.entries(groupedDefinitions).map(([key, definitions]) => {
+      const layers = definitions
+        .sort((a, b) => a.order - b.order)
+        .map((definition) => {
+          const condition = definition.conditionImport ? `, conditionFactory: ${definition.conditionImport}` : ''
+          return `    { component: () => import(${JSON.stringify(definition.component)})${condition} },`
+        })
+
+      return [
+        `  ${JSON.stringify(key)}: [`,
+        ...layers,
+        '  ],',
+      ].join('\n')
     })
 
     addTemplate({

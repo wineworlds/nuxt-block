@@ -6,6 +6,20 @@
   "test-block-2": {
     "component": "./TestBlock2/testBlock.vue"
   },
+  "test-block-3": [
+    {
+      "component": "./TestBlock3/LayerOne.vue",
+      "condition": "./TestBlock3/layerOneCondition.ts"
+    },
+    {
+      "component": "./TestBlock3/LayerTwo.vue",
+      "condition": "./TestBlock3/layerTwoCondition.ts"
+    },
+    {
+      "component": "./TestBlock3/LayerThree.vue",
+      "condition": "./TestBlock3/layerThreeCondition.ts"
+    }
+  ],
   "checkout.review.actions": {
     "component": "./PayPal/CheckoutActions.vue",
     "condition": "./PayPal/checkoutActionCondition.ts"

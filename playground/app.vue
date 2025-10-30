@@ -47,6 +47,31 @@
         </option>
       </select>
     </div>
+
+    <div>
+      <h2>Example 3</h2>
+
+      <div class="stack">
+        <label>
+          <input v-model="layer1" type="checkbox">
+          Enable layer 1
+        </label>
+        <label>
+          <input v-model="layer2" type="checkbox">
+          Enable layer 2
+        </label>
+        <label>
+          <input v-model="layer3" type="checkbox">
+          Enable layer 3
+        </label>
+      </div>
+
+      <Block name="test-block-3">
+        <div>
+          <em>Default content for block 3</em>
+        </div>
+      </Block>
+    </div>
   </div>
 </template>
 
@@ -56,4 +81,8 @@ const state = useState('test-block-condition', () => true)
 const paymentMethod = ref('')
 
 provide('checkout-payment-method', paymentMethod)
+
+const layer1 = useState('test-block-3-layer-1', () => true)
+const layer2 = useState('test-block-3-layer-2', () => true)
+const layer3 = useState('test-block-3-layer-3', () => true)
 </script>

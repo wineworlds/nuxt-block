@@ -43,18 +43,27 @@ export default defineNuxtConfig({
 
 ## 📂 Block Mapping
 
-Define your block mappings in a `mapping.json` file inside the `blocks/` directory. The **condition** property is optional:
+Define your block mappings in a `mapping.json` file inside the `blocks/` directory. Each entry can be a single object or an array of objects. The **condition** property is optional:
 
 ```json
 {
   "logo": {
     "component": "./Logo/logo.vue",
     "condition": "./Logo/condition.ts"
-  }
+  },
+  "checkout.review.actions": [
+    {
+      "component": "./Checkout/PrimaryActions.vue"
+    },
+    {
+      "component": "./Checkout/SecondaryActions.vue",
+      "condition": "./Checkout/secondaryCondition.ts"
+    }
+  ]
 }
 ```
 
-The specified files should also be located within the `blocks/` directory.
+The specified files should also be located within the `blocks/` directory. When multiple entries target the same key, they are evaluated in order: every entry whose condition resolves truthy wraps the next one and ultimately the default slot, allowing layered extensions.
 
 ## 🛠 Usage
 
@@ -119,4 +128,3 @@ Contributions are welcome! If you’d like to improve this module, feel free to 
 ## 📜 License
 
 MIT
-
