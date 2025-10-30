@@ -36,7 +36,10 @@
       </Block>
 
       <select v-model="paymentMethod">
-        <option default value="">
+        <option
+          default
+          value=""
+        >
           Default
         </option>
         <option value="acdc">
@@ -53,15 +56,24 @@
 
       <div class="stack">
         <label>
-          <input v-model="layer1" type="checkbox">
+          <input
+            v-model="layer1"
+            type="checkbox"
+          >
           Enable layer 1
         </label>
         <label>
-          <input v-model="layer2" type="checkbox">
+          <input
+            v-model="layer2"
+            type="checkbox"
+          >
           Enable layer 2
         </label>
         <label>
-          <input v-model="layer3" type="checkbox">
+          <input
+            v-model="layer3"
+            type="checkbox"
+          >
           Enable layer 3
         </label>
       </div>

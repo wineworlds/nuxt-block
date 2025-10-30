@@ -1,11 +1,11 @@
 <script lang="ts">
 import { computed, defineAsyncComponent, defineComponent, h, toValue } from 'vue'
-import type { MaybeRefOrGetter } from 'vue'
+import type { Component, MaybeRefOrGetter } from 'vue'
 import registry from '#build/block-registry'
 
 interface RegistryLayer {
-  component: () => Promise<any>
-  conditionFactory?: (context: any) => MaybeRefOrGetter<boolean>
+  component: () => Promise<Component>
+  conditionFactory?: (context: unknown) => MaybeRefOrGetter<boolean>
 }
 
 type AsyncComponent = ReturnType<typeof defineAsyncComponent>
@@ -16,7 +16,7 @@ interface PreparedLayer {
 }
 
 const preparedBlocks = Object.entries(registry as Record<string, RegistryLayer[]>).reduce((accumulator, [key, layers]) => {
-  accumulator[key] = layers.map((layer) => ({
+  accumulator[key] = layers.map(layer => ({
     component: defineAsyncComponent(layer.component),
     conditionFactory: layer.conditionFactory ?? null,
   }))

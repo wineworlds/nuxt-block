@@ -1,5 +1,8 @@
 <template>
-  <component v-if="selectedComponent" :is="selectedComponent" />
+  <component
+    :is="selectedComponent"
+    v-if="selectedComponent"
+  />
 </template>
 
 <script setup lang="ts">
