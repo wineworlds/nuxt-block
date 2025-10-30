@@ -5,10 +5,10 @@ This module provides a way to define blocks in Nuxt templates, allowing them to 
 ## ✨ Features
 
 - Define blocks in templates and override them dynamically.
+- Layer multiple overrides for the same block key; every matching layer wraps the next one so nested extensions behave predictably.
 - Use a **condition** (implemented as a composable) to determine whether a component should be loaded.
 - Inspired by Twig's block system, bringing similar functionality to Nuxt.
 - Future improvements:
-  - Support for **nested block overrides** (currently, a block can only be overridden once).
   - **Dynamic lazy loading** of composables for better performance (if feasible).
 
 ## 🚀 Installation
@@ -83,7 +83,6 @@ or provide a fallback content:
 
 ## 🏗 Future Enhancements
 
-- **Nested overrides**: Allow blocks to be overridden multiple times in a hierarchy.
 - **Lazy loading of composables**: Improve performance by dynamically loading only required composables.
 
 ## 🤝 Contributing
