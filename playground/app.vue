@@ -21,7 +21,7 @@
         </option>
       </select>
 
-      <button @click="state.value = !state.value">
+      <button @click="state = !state">
         Toggle condition for block 1
       </button>
     </div>

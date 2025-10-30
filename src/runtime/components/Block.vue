@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, shallowRef, watchEffect } from 'vue'
+import { computed, defineAsyncComponent, toValue } from 'vue'
 import registry from '#build/block-registry'
 
 const props = defineProps<{
@@ -7,9 +7,11 @@ const props = defineProps<{
   context?: any
 }>()
 
+type ConditionEvaluator = import('vue').MaybeRefOrGetter<boolean>
+
 interface RegistryEntry {
   component: () => Promise<any>
-  conditionFactory?: (context: any) => (() => Promise<boolean> | boolean)
+  conditionFactory?: (context: any) => ConditionEvaluator
 }
 
 type AsyncComponent = ReturnType<typeof defineAsyncComponent>
@@ -17,6 +19,11 @@ type AsyncComponent = ReturnType<typeof defineAsyncComponent>
 interface MappedBlock {
   component: AsyncComponent
   conditionFactory: RegistryEntry['conditionFactory'] | null
+}
+
+interface ResolvedBlock {
+  component: AsyncComponent
+  condition: ConditionEvaluator | null
 }
 
 const mappedBlocks = Object.entries(registry as Record<string, RegistryEntry>).reduce((accumulator, [key, value]) => {
@@ -27,36 +34,37 @@ const mappedBlocks = Object.entries(registry as Record<string, RegistryEntry>).r
   return accumulator
 }, {} as Record<string, MappedBlock>)
 
-const selectedComponent = shallowRef<AsyncComponent | null>(null)
+const resolvedBlock = computed<ResolvedBlock | null>(() => {
+  if (!props.name || !(props.name in mappedBlocks)) {
+    return null
+  }
 
-const check = async () => {
-  if (props.name && props.name in mappedBlocks) {
-    const block = mappedBlocks[props.name]
+  const block = mappedBlocks[props.name]
+  const context = props.context ?? {}
+  const condition = block.conditionFactory ? block.conditionFactory(context) : null
 
-    if (block.conditionFactory) {
-      const conditionResult = block.conditionFactory(props.context ?? {})
+  return {
+    component: block.component,
+    condition,
+  }
+})
 
-      const evaluateCondition = typeof conditionResult === 'function'
-        ? conditionResult
-        : async () => await conditionResult
+const selectedComponent = computed<AsyncComponent | null>(() => {
+  const value = resolvedBlock.value
 
-      const result = await evaluateCondition()
+  if (!value) {
+    return null
+  }
 
-      if (!result) {
-        selectedComponent.value = null
-        return
-      }
+  if (value.condition !== null) {
+    const result = toValue(value.condition)
+    if (!result) {
+      return null
     }
-
-    selectedComponent.value = block.component
   }
-  else {
-    selectedComponent.value = null
-  }
-}
 
-await check()
-watchEffect(check)
+  return value.component
+})
 </script>
 
 <template>
