@@ -4,7 +4,6 @@ import { camelCase } from 'scule'
 
 import {
   addComponent,
-  addImports,
   addTemplate,
   createResolver,
   defineNuxtModule,
@@ -17,6 +16,13 @@ export interface NuxtBlockModuleOptions {
   blocks: string[]
 }
 
+interface BlockDefinition {
+  key: string
+  component: string
+  conditionPath: string | null
+  conditionImport: string | null
+}
+
 export default defineNuxtModule<NuxtBlockModuleOptions>({
   meta: {
     name: 'nuxt-block',
@@ -25,58 +31,57 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
   defaults: {
     blocks: [],
   },
-  async setup(options, nuxt) {
+  async setup(options) {
     const { resolve } = createResolver(import.meta.url)
 
-    const blocks = options.blocks.map((path) => {
+    const blockDefinitions: BlockDefinition[] = options.blocks.flatMap((path) => {
       try {
         const mapping: Record<string, {
           component: string
           condition?: string
         }> = JSON.parse(readFileSync(join(path, 'mapping.json'), 'utf8'))
-        return Object.entries(mapping).map(([k, v]) => {
-          const component = join(path, v.component)
-          const condition = v.condition ? join(path, v.condition) : null
-          const conditionName = camelCase(`${k}-condition`)
 
-          if (condition) {
-            addImports({
-              name: 'default',
-              as: conditionName,
-              from: condition,
-            })
-          }
+        return Object.entries(mapping).map(([key, value]) => {
+          const component = join(path, value.component)
+          const conditionPath = value.condition ? join(path, value.condition) : null
 
           return {
-            [k]: {
-              component,
-              condition: condition ? conditionName : null,
-            },
+            key,
+            component,
+            conditionPath,
+            conditionImport: conditionPath ? camelCase(`${key}-condition`) : null,
           }
         })
       }
       catch (error) {
         console.log(error)
-        return {}
+        return []
       }
-    }).flat().reduce((accumulator, currentValue) => ({
-      ...accumulator,
-      ...currentValue,
-    }), {})
+    })
+
+    const conditionImports = blockDefinitions
+      .filter(definition => definition.conditionPath && definition.conditionImport)
+      .map(definition => `import ${definition.conditionImport} from ${JSON.stringify(definition.conditionPath)}`)
+
+    const registryEntries = blockDefinitions.map((definition) => {
+      const condition = definition.conditionImport ? `, condition: ${definition.conditionImport}` : ''
+      return `  ${JSON.stringify(definition.key)}: { component: () => import(${JSON.stringify(definition.component)})${condition} },`
+    })
 
     addTemplate({
-      src: resolve('./runtime/components/Block.vue.template'),
-      filename: 'Block.vue', // Place to .nuxt/
-      // filename: resolve('./runtime/components/Block.vue'), // Place to Module
-      options: {
-        blocks,
-      },
+      filename: 'block-registry.mjs',
+      getContents: () => [
+        ...conditionImports,
+        conditionImports.length ? '' : null,
+        'export default {',
+        ...registryEntries,
+        '}',
+      ].filter(Boolean).join('\n'),
       write: true,
     })
 
     addComponent({
-      filePath: join(nuxt.options.buildDir, 'Block.vue'), // Load from .nuxt/Block.vue
-      // filePath: resolve('./runtime/components/Block.vue'), // Load from Module
+      filePath: resolve('./runtime/components/Block.vue'),
       name: 'Block',
     })
   },
