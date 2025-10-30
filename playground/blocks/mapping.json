@@ -5,5 +5,9 @@
   },
   "test-block-2": {
     "component": "./TestBlock2/testBlock.vue"
+  },
+  "checkout.review.actions": {
+    "component": "./PayPal/CheckoutActions.vue",
+    "condition": "./PayPal/checkoutActionCondition.ts"
   }
 }

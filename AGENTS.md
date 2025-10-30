@@ -8,3 +8,4 @@
 
 CODEX-FIX Notizen
 - 2025-03-20: Modul generiert `#build/block-registry` über `addTemplate`; `src/runtime/components/Block.vue` lädt Registry statt inline Template zu verwenden. Conditions liefern jetzt eine Factory, deren Rückgabe (Promise/bool) in `Block.vue` awaited wird.
+- 2025-03-20: Playground-Example 1 nutzt `useState` für Conditions (`TestBlock1`), Example 2 testet `provide/inject` über `checkoutActionCondition.ts` und `CheckoutActions.vue`.
