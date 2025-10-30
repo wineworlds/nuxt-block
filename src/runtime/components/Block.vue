@@ -9,18 +9,23 @@ const props = defineProps<{
 
 interface RegistryEntry {
   component: () => Promise<any>
-  condition?: (context: any) => any
+  conditionFactory?: (context: any) => (() => Promise<boolean> | boolean)
 }
 
 type AsyncComponent = ReturnType<typeof defineAsyncComponent>
 
+interface MappedBlock {
+  component: AsyncComponent
+  conditionFactory: RegistryEntry['conditionFactory'] | null
+}
+
 const mappedBlocks = Object.entries(registry as Record<string, RegistryEntry>).reduce((accumulator, [key, value]) => {
   accumulator[key] = {
     component: defineAsyncComponent(value.component),
-    condition: value.condition ?? null,
+    conditionFactory: value.conditionFactory ?? null,
   }
   return accumulator
-}, {} as Record<string, { component: AsyncComponent; condition: RegistryEntry['condition'] | null }>)
+}, {} as Record<string, MappedBlock>)
 
 const selectedComponent = shallowRef<AsyncComponent | null>(null)
 
@@ -28,9 +33,16 @@ const check = async () => {
   if (props.name && props.name in mappedBlocks) {
     const block = mappedBlocks[props.name]
 
-    if (block.condition) {
-      const conditionResult = await block.condition(props.context ?? {})
-      if (!conditionResult) {
+    if (block.conditionFactory) {
+      const conditionResult = block.conditionFactory(props.context ?? {})
+
+      const evaluateCondition = typeof conditionResult === 'function'
+        ? conditionResult
+        : async () => await conditionResult
+
+      const result = await evaluateCondition()
+
+      if (!result) {
         selectedComponent.value = null
         return
       }

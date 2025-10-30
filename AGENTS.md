@@ -7,4 +7,4 @@
 - Sobald der User "bitte veröffentlichen" sagt, den gesamten Release-Flow (fachlicher Commit, ggf. Build, Release-Commit, Tag setzen) selbstständig ausführen.
 
 CODEX-FIX Notizen
-- 2025-03-20: Modul generiert `#build/block-registry` über `addTemplate`; `src/runtime/components/Block.vue` lädt Registry statt inline Template zu verwenden. Bei Anpassungen daran auf konsistente Async-Imports achten.
+- 2025-03-20: Modul generiert `#build/block-registry` über `addTemplate`; `src/runtime/components/Block.vue` lädt Registry statt inline Template zu verwenden. Conditions liefern jetzt eine Factory, deren Rückgabe (Promise/bool) in `Block.vue` awaited wird.

@@ -64,7 +64,7 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
       .map(definition => `import ${definition.conditionImport} from ${JSON.stringify(definition.conditionPath)}`)
 
     const registryEntries = blockDefinitions.map((definition) => {
-      const condition = definition.conditionImport ? `, condition: ${definition.conditionImport}` : ''
+      const condition = definition.conditionImport ? `, conditionFactory: ${definition.conditionImport}` : ''
       return `  ${JSON.stringify(definition.key)}: { component: () => import(${JSON.stringify(definition.component)})${condition} },`
     })
 
