@@ -1,6 +1,6 @@
 {
   "name": "@wineworlds/nuxt-block",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": false,
   "description": "This module provides a way to define blocks in Nuxt templates, allowing them to be dynamically overridden elsewhere. It is fully compatible with **Nuxt Layers**.",
   "author": {
