@@ -47,11 +47,9 @@ export default defineComponent({
         return []
       }
 
-      const context = props.context ?? {}
-
       return layers.map(layer => ({
         component: layer.component,
-        condition: layer.conditionFactory ? layer.conditionFactory(context) : null,
+        conditionFactory: layer.conditionFactory ?? null,
       }))
     })
 
@@ -60,10 +58,12 @@ export default defineComponent({
       const baseSlot = slots.default ?? (() => [])
       let render = baseSlot
 
+      const context = props.context ?? {}
       for (let index = layers.length - 1; index >= 0; index -= 1) {
         const layer = layers[index]
+        const condition = layer.conditionFactory ? layer.conditionFactory(context) : null
 
-        if (layer.condition !== null && !toValue(layer.condition)) {
+        if (condition !== null && !toValue(condition)) {
           continue
         }
 

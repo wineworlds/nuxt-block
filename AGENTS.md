@@ -9,3 +9,4 @@
 CODEX-FIX Notizen
 - 2025-03-20: Modul generiert `#build/block-registry` über `addTemplate`; `src/runtime/components/Block.vue` lädt Registry statt inline Template zu verwenden. Conditions liefern jetzt eine Factory, deren Rückgabe (Promise/bool) in `Block.vue` awaited wird.
 - 2025-03-20: Playground-Example 1 nutzt `useState` für Conditions (`TestBlock1`), Example 2 testet `provide/inject` über `checkoutActionCondition.ts` und `CheckoutActions.vue`. Conditions liefern nun `ref`/`computed` statt async Callback; Block.vue verschachtelt mehrere Layer per `h()` und wertet Conditions vorab aus.
+- 2025-10-XX: `src/runtime/components/Block.vue` wertet Conditions erst im Render-Loop aus (anstatt bereits im `computed`), damit Composables wie `useProduct` mit `injectLocal` wieder während eines gültigen Setup-Kontexts ausgeführt werden können.
