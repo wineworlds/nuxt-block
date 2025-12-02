@@ -35,7 +35,7 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
   async setup(options) {
     const { resolve } = createResolver(import.meta.url)
 
-    const blockDefinitions: BlockDefinition[] = options.blocks.flatMap((path) => {
+    const aggregatedMapping = options.blocks.reduce((accumulator, path) => {
       try {
         const mapping: Record<string, {
           component: string
@@ -45,28 +45,43 @@ export default defineNuxtModule<NuxtBlockModuleOptions>({
           condition?: string
         }>> = JSON.parse(readFileSync(join(path, 'mapping.json'), 'utf8'))
 
-        return Object.entries(mapping).flatMap(([key, rawValue]) => {
+        Object.entries(mapping).forEach(([key, rawValue]) => {
           const entries = Array.isArray(rawValue) ? rawValue : [rawValue]
 
-          return entries.map((value, index) => {
-            const component = join(path, value.component)
-            const conditionPath = value.condition ? join(path, value.condition) : null
-            const conditionImport = conditionPath ? camelCase(`${key}-condition-${index}`) : null
+          if (!accumulator[key]) {
+            accumulator[key] = []
+          }
 
-            return {
-              key,
-              component,
-              conditionPath,
-              conditionImport,
-              order: index,
-            }
+          entries.forEach((value) => {
+            accumulator[key].push({
+              component: join(path, value.component),
+              conditionPath: value.condition ? join(path, value.condition) : null,
+            })
           })
         })
       }
       catch (error) {
         console.log(error)
-        return []
       }
+
+      return accumulator
+    }, {} as Record<string, Array<{
+      component: string
+      conditionPath: string | null
+    }>>)
+
+    const blockDefinitions: BlockDefinition[] = Object.entries(aggregatedMapping).flatMap(([key, definitions]) => {
+      return definitions.map((definition, index) => {
+        const conditionImport = definition.conditionPath ? camelCase(`${key}-condition-${index}`) : null
+
+        return {
+          key,
+          component: definition.component,
+          conditionPath: definition.conditionPath,
+          conditionImport,
+          order: index,
+        }
+      })
     })
 
     const conditionImports = blockDefinitions
